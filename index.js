@@ -48,7 +48,7 @@ app.get('/', (req, res) => {
 app.post('/generate-barcode', async (req, res) => {
     try {
         const { userId } = req.body;
-        const user = await prisma.user.findUnique({ where: { id: userId } });
+        const user = await prisma.User.findUnique({ where: { id: userId } });
 
         if (!user) return res.status(404).json({ message: 'User not found' });
 
@@ -85,7 +85,7 @@ app.post('/scan-barcode', async (req, res) => {
         // } catch (err) {
         //     return res.status(400).json({ message: 'Invalid barcode format' });
         // }
-        const user = await prisma.user.findFirst({
+        const user = await prisma.User.findFirst({
             where: { barcode: barcode },
         });
 
@@ -105,7 +105,7 @@ app.post('/scan-barcode', async (req, res) => {
 
 app.get('/absences', async (req, res) => {
     try {
-        const absences = await prisma.absence.findMany({
+        const absences = await prisma.Absence.findMany({
             include: { user: true },
         });
         res.json(absences);
