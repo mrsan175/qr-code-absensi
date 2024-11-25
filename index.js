@@ -4,6 +4,9 @@ import QRCode from 'qrcode';
 import crypto from 'crypto';
 import cors from 'cors';
 import dotenv from 'dotenv';
+import rateLimit from 'express-rate-limit';
+import helmet from 'helmet';
+
 dotenv.config();
 
 const app = express();
@@ -11,10 +14,17 @@ const prisma = new PrismaClient();
 
 app.use(express.json());
 app.use(cors());
-
+app.use(helmet());
 
 const encryptionKeys = process.env.SECRET_KEY;
 const algorithm = 'aes-128-cbc';
+
+
+const generateQrcodeLimiter = rateLimit({
+    windowMs: 4000,
+    max: 1,
+    message: 'Too many requests, please try again after 3 seconds.',
+});
 
 function encrypt(text, encryptionKey) {
     if (encryptionKey.length !== 32) {
@@ -43,12 +53,13 @@ function decrypt(encryptedText, encryptionKey) {
 
 app.get('/', (req, res) => {
     res.send('Qrcode Absensi API by mrsan');
-})
+});
 
-app.post('/generate-barcode', async (req, res) => {
+
+app.post('/generate-qrcode', generateQrcodeLimiter, async (req, res) => {
     try {
         const { userId } = req.body;
-        const user = await prisma.User.findUnique({ where: { id: userId } });
+        const user = await prisma.user.findUnique({ where: { id: userId } });
 
         if (!user) return res.status(404).json({ message: 'User not found' });
 
@@ -62,50 +73,68 @@ app.post('/generate-barcode', async (req, res) => {
 
         const barcodeImage = await QRCode.toDataURL(encryptedText);
 
-        console.log('Generated barcode for', encryptedText);
+        console.log('Generated QR Code for', encryptedText);
 
         res.json({ barcodeImage });
 
     } catch (err) {
         console.error(err);
-        res.status(500).json({ message: 'Error generating barcode' });
+        res.status(500).json({ message: 'Error generating QR Code' });
     }
 });
 
-
-app.post('/scan-barcode', async (req, res) => {
+app.post('/scan-qrcode', async (req, res) => {
     try {
-        const { barcode } = req.body;
-        if (!barcode) {
-            return res.status(400).json({ message: 'Barcode tidak ditemukan!' });
+        const { qrcode } = req.body;
+        if (!qrcode) {
+            return res.status(400).json({ message: 'QR Code not found' });
         }
-        // let decryptedText;
-        // try {
-        //     decryptedText = decrypt(barcode, encryptionKeys);
-        // } catch (err) {
-        //     return res.status(400).json({ message: 'Invalid barcode format' });
-        // }
-        const user = await prisma.User.findFirst({
-            where: { barcode: barcode },
+        const user = await prisma.user.findFirst({
+            where: { barcode: qrcode },
         });
 
-        if (!user) return res.status(404).json({ message: 'Invalid barcode' });
+        if (!user) {
+            return res.status(404).json({ message: 'QR Code not valid' });
+        }
+
+        const today = new Date();
+        const startOfDay = new Date(today.setHours(0, 0, 0, 0));
+        const endOfDay = new Date(today.setHours(23, 59, 59, 999));
+
+        const existingAbsence = await prisma.absence.findFirst({
+            where: {
+                userId: user.userId,
+                timestamp: {
+                    gte: startOfDay,
+                    lte: endOfDay,
+                },
+            },
+        });
+
+        if (existingAbsence) {
+            return res.json({ message: `Hai ${user.name}, kamu sudah absen hari ini.` });
+        }
 
         await prisma.absence.create({
             data: { userId: user.id },
         });
 
+        await prisma.user.update({
+            where: { id: user.id },
+            data: { barcode: null },
+        });
+
         res.json({ message: `Hai ${user.name}, kamu berhasil melakukan absen hari ini.` });
+
     } catch (err) {
         console.error(err);
-        res.status(500).json({ message: 'Error scanning barcode' });
+        res.status(500).json({ message: 'Error scanning QR Code' });
     }
 });
 
-
 app.get('/absences', async (req, res) => {
     try {
-        const absences = await prisma.Absence.findMany({
+        const absences = await prisma.absence.findMany({
             include: { user: true },
         });
         res.json(absences);
