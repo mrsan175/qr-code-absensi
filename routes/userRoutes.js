@@ -8,7 +8,7 @@ userRouter.get('/user', authMiddleware, (req, res) => {
     res.json({ message: 'Welcome to the user dashboard' });
 })
 
-userRouter.post('/user/generate-qrcode', generateQrcode);
+userRouter.post('/user/generate-qrcode', authMiddleware, generateQrcode);
 
 
 
