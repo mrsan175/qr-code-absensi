@@ -56,6 +56,7 @@ const loginUser = async (req, res) => {
             token,
         });
     } catch (err) {
+        console.log(err);
         if (err instanceof z.ZodError) {
             return res.status(400).json({ message: 'Validation error', details: err.errors });
         }
