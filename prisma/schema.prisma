@@ -9,11 +9,16 @@ datasource db {
 }
 
 model User {
-  id       Int       @id @default(autoincrement())
-  name     String
-  email    String    @unique
-  barcode  String?   @unique
-  absences Absence[]
+  id        Int       @id @default(autoincrement())
+  name      String
+  email     String    @unique
+  password  String
+  qrcode    String?   @unique
+  token     String?   @unique
+  role      String    @default("user")
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  absences  Absence[]
 }
 
 model Absence {
