@@ -3,7 +3,7 @@ import { PrismaClient } from "@prisma/client";
 import { encrypt, encryptionKeys } from "../utils/encryptionUtils.js";
 const prisma = new PrismaClient();
 
-const generateQrcode = async (req, res) => {
+const generateQrcode = async (req, res, io) => {
     try {
         const { userId } = req.body;
         const user = await prisma.user.findUnique({ where: { id: userId } });
