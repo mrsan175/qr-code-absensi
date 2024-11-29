@@ -22,7 +22,7 @@ app.use(express.json());
 app.use(
     cors({
         credentials: true,
-        origin: 'https://qrcode-absensi.vercel.app/',
+        origin: 'https://qrcode-absensi.vercel.app',
     })
 );
 app.use(helmet());
