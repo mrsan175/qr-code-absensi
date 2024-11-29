@@ -45,7 +45,7 @@ const loginUser = async (req, res) => {
                 httpOnly: true,
                 secure: true,
                 maxAge: 3 * 24 * 60 * 60 * 1000,
-                sameSite: 'strict',
+                sameSite: 'none',
             })
             .status(200).json({
                 message: 'Login successful',
