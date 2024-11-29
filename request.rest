@@ -1,0 +1,37 @@
+POST http://localhost:8000/api/auth/login
+Content-Type: application/json
+
+{
+    "credential": "san",
+    "password": "admin123"
+}
+
+###
+GET http://localhost:8000/api/auth/token
+
+###
+GET http://localhost:8000/api/admin
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiZW1haWwiOiJhZG1pbkBleGFtcGxlLmNvbSIsIm5hbWUiOiJzYW4iLCJyb2xlIjoiYWRtaW4iLCJpYXQiOjE3MzI5MDExMzIsImV4cCI6MTczMjkzNzEzMn0.VozPiXi4h9ExOKSH3Mu_-CxYc3JfCK_anwCqyMS-Efw
+
+###
+DELETE http://localhost:8000/api/auth/logout
+
+
+###
+POST http://localhost:8000/api/auth/register
+Content-Type: application/json
+
+{
+    "name": "san",
+    "email": "admin@example.com",
+    "password": "admin123"
+}
+
+###
+POST http://localhost:8000/api/user/generate-qrcode
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiZW1haWwiOiJhZG1pbkBleGFtcGxlLmNvbSIsIm5hbWUiOiJzYW4iLCJyb2xlIjoiYWRtaW4iLCJpYXQiOjE3MzI5MDExMzIsImV4cCI6MTczMjkzNzEzMn0.VozPiXi4h9ExOKSH3Mu_-CxYc3JfCK_anwCqyMS-Efw
+
+{
+    "userId": 1
+}

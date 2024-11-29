@@ -2,6 +2,7 @@ import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
 import helmet from 'helmet';
+import cookieParser from 'cookie-parser';
 import authRouter from './routes/authRoutes.js';
 import adminRouter from './routes/adminRoutes.js';
 import userRouter from './routes/userRoutes.js';
@@ -20,11 +21,12 @@ app.set('trust proxy', 3);
 app.use(express.json());
 app.use(
     cors({
-        origin: '*',
         credentials: true,
+        origin: 'https://qrcode-absensi.vercel.app/',
     })
 );
 app.use(helmet());
+app.use(cookieParser());
 app.use('/api', authRouter);
 app.use('/api', adminRouter);
 app.use('/api', userRouter);
@@ -40,8 +42,8 @@ app.get('/', (req, res) => {
     res.send('Qrcode Absensi API by mrsan');
 });
 
-server.listen(8000, () => {
-    console.log(`Socket is running on port 8000`);
+server.listen(port, () => {
+    console.log(`Socket is running on port ${port}`);
 })
 
 // app.listen(process.env.SERVER_PORT || port, () => {

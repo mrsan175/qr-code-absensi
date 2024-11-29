@@ -1,7 +1,6 @@
 import { PrismaClient } from "@prisma/client";
 const prisma = new PrismaClient();
 
-
 const createUser = async (name, email, password) => {
     try {
         const user = await prisma.user.create({
@@ -31,10 +30,8 @@ const loginToken = async (user, token) => {
     }
 };
 
-
 const findUserByEmail = async (email) => {
     try {
-
         const user = await prisma.user.findUnique({
             where: { email: email },
         });
@@ -62,5 +59,29 @@ const findUserByUsernameOrEmail = async (credential) => {
     }
 };
 
+const findRefreshToken = async (refreshToken) => {
+    try {
+        const session = await prisma.user.findUnique({
+            where: { token: refreshToken },
+        });
+        return session;
+    } catch (err) {
+        console.error('Error finding refresh token:', err);
+        throw new Error('Could not find refresh token');
+    }
+}
 
-export { createUser, loginToken, findUserByEmail, findUserByUsernameOrEmail };
+const deleteRefreshToken = async (refreshToken) => {
+    try {
+        const session = await prisma.user.update({
+            where: { token: refreshToken },
+            data: { token: null },
+        });
+        return session;
+    } catch (err) {
+        console.error('Error deleting refresh token:', err);
+        throw new Error('Could not delete refresh token');
+    }
+}
+
+export { createUser, loginToken, findUserByEmail, findUserByUsernameOrEmail, findRefreshToken, deleteRefreshToken };

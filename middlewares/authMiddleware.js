@@ -3,26 +3,23 @@ import { PrismaClient } from '@prisma/client';
 const prisma = new PrismaClient();
 
 export const authMiddleware = (req, res, next) => {
-    const token = req.headers['authorization']?.split(' ')[1];
-    if (!token) {
-        return res.status(401).json({ message: 'Access denied. No token provided.' });
-    }
-
-    jwt.verify(token, process.env.JWT_SECRET, async (err, decoded) => {
-        if (err) {
-            return res.status(403).json({ message: 'Invalid or expired token' });
-        }
-        const session = await prisma.user.findUnique({
-            where: { token: token },
+    try {
+        const token = req.headers['authorization']?.split(' ')[1];
+        if (token === null) return res.sendStatus(401);
+        jwt.verify(token, process.env.JWT_SECRET, async (err, decoded) => {
+            if (err) {
+                console.error(err);
+                return res.sendStatus(403);
+            }
+            const refreshToken = req.cookies._XYZabc123;
+            if (!refreshToken) return res.sendStatus(403);
+            req.user = decoded;
+            next();
         });
-
-        if (!session) {
-            return res.status(403).json({ message: 'Token not found in database' });
-        }
-
-        req.user = decoded;
-        next();
-    });
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ message: 'Server error   ' });
+    }
 };
 
 export const authorizeRole = (requiredRoles) => {
