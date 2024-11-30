@@ -11,7 +11,7 @@ GET http://localhost:8000/api/auth/token
 
 ###
 GET http://localhost:8000/api/admin
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiZW1haWwiOiJhZG1pbkBleGFtcGxlLmNvbSIsIm5hbWUiOiJzYW4iLCJyb2xlIjoiYWRtaW4iLCJpYXQiOjE3MzI5MDExMzIsImV4cCI6MTczMjkzNzEzMn0.VozPiXi4h9ExOKSH3Mu_-CxYc3JfCK_anwCqyMS-Efw
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiZW1haWwiOiJhZG1pbkBleGFtcGxlLmNvbSIsIm5hbWUiOiJzYW4iLCJyb2xlIjoiYWRtaW4iLCJpYXQiOjE3MzI5NjY4MzIsImV4cCI6MTczMzAwMjgzMn0.EmwyQGzw3PDVrtAOGWb1RZBtWTzpYvmserNpDI_ae9Y
 
 ###
 DELETE http://localhost:8000/api/auth/logout
@@ -30,7 +30,7 @@ Content-Type: application/json
 ###
 POST http://localhost:8000/api/user/generate-qrcode
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiZW1haWwiOiJhZG1pbkBleGFtcGxlLmNvbSIsIm5hbWUiOiJzYW4iLCJyb2xlIjoiYWRtaW4iLCJpYXQiOjE3MzI5MDExMzIsImV4cCI6MTczMjkzNzEzMn0.VozPiXi4h9ExOKSH3Mu_-CxYc3JfCK_anwCqyMS-Efw
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiZW1haWwiOiJhZG1pbkBleGFtcGxlLmNvbSIsIm5hbWUiOiJzYW4iLCJyb2xlIjoiYWRtaW4iLCJpYXQiOjE3MzI5NjQyOTAsImV4cCI6MTczMzAwMDI5MH0.p233jGrs2TVroNHPgPfnFT5P4saooRyPYuJlCu9tDR0
 
 {
     "userId": 1

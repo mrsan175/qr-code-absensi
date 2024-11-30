@@ -26,52 +26,34 @@ const registerUser = async (req, res) => {
 };
 
 const loginUser = async (req, res) => {
-    try {
-        const validatedData = loginValidator.parse(req.body);
-        const { credential, password } = validatedData;
-        const user = await findUserByUsernameOrEmail(credential);
-        if (!user) {
-            return res.status(400).json({ message: 'Invalid username/email or password' });
-        }
-        const isMatch = await bcrypt.compare(password, user.password);
-        if (!isMatch) {
-            return res.status(400).json({ message: 'Invalid username/email or password' });
-        }
-        const accessToken = generateToken(user);
-        const refreshToken = generateRefreshToken(user);
-        await loginToken(user, refreshToken);
-        res
-            .cookie('_XYZabc123', refreshToken, {
-                httpOnly: true,
-                secure: true,
-                maxAge: 3 * 24 * 60 * 60 * 1000,
-                sameSite: 'none',
-            })
-            .status(200).json({
-                message: 'Login successful',
-                user: { name: user.name, email: user.email, role: user.role, id: user.id },
-                token: accessToken,
-            });
-    } catch (err) {
-        console.log(err);
-        if (err instanceof z.ZodError) {
-            return res.status(400).json({ message: 'Validation error', details: err.errors });
-        }
-        res.status(500).json({ message: 'Internal server error' });
+    const { credential, password } = loginValidator.parse(req.body);
+
+    const user = await findUserByUsernameOrEmail(credential);
+    if (!user || !(await bcrypt.compare(password, user.password))) {
+        return res.status(400).json({ message: 'Invalid username/email or password' });
     }
+
+    const accessToken = generateToken(user);
+    const refreshToken = generateRefreshToken(user);
+    await loginToken(user, refreshToken);
+
+    res
+        .cookie('_XYZabc123', refreshToken, {
+            httpOnly: true,
+            maxAge: 3 * 24 * 60 * 60 * 1000,
+            sameSite: 'strict',
+            // secure: true,
+        })
+        .status(200).json({
+            message: 'Login successful',
+            user: { name: user.name, email: user.email, role: user.role, id: user.id },
+            token: accessToken,
+        });
 };
 
 const logoutUser = async (req, res) => {
-    try {
-        const refreshToken = req.cookies._XYZabc123;
-        if (!refreshToken) return res.sendStatus(403);
-        console.log(refreshToken);
-        res.clearCookie('_XYZabc123');
-        res.json({ message: 'Logout successful' });
-    } catch (err) {
-        console.log(err);
-        res.status(500).json({ message: 'Internal server error' });
-    }
+    res.clearCookie('_XYZabc123');
+    res.sendStatus(200);
 }
 
 const refreshTokenUser = async (req, res) => {

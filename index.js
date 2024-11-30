@@ -14,16 +14,24 @@ dotenv.config();
 const app = express();
 const server = http.createServer(app);
 const port = process.env.SERVER_PORT || 8000;
+const allowedOrigins = ['https://qrcode-absensi.vercel.app'];
+const corsOptions = {
+    origin: function (origin, callback) {
+        if (!origin || allowedOrigins.indexOf(origin) !== -1) {
+            callback(null, true);
+        } else {
+            callback(new Error('Not allowed by CORS'));
+        }
+    },
+    credentials: true,
+}
 
 setupSocket(server);
 
 app.set('trust proxy', 3);
 app.use(express.json());
 app.use(
-    cors({
-        credentials: true,
-        origin: 'https://qrcode-absensi.vercel.app',
-    })
+    cors(corsOptions)
 );
 app.use(helmet());
 app.use(cookieParser());
