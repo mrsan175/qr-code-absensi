@@ -41,8 +41,8 @@ const loginUser = async (req, res) => {
         .cookie('_XYZabc123', refreshToken, {
             httpOnly: true,
             maxAge: 3 * 24 * 60 * 60 * 1000,
-            sameSite: 'strict',
-            // secure: true,
+            sameSite: 'none',
+            secure: true,
         })
         .status(200).json({
             message: 'Login successful',
